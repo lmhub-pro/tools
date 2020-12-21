@@ -1,0 +1,63 @@
+.tips {
+    font-size: 12px;
+    margin-bottom: 10px;
+    position: absolute;
+    background: white;
+    right: 0;
+    border: 1px solid #efefef;
+    cursor: pointer;
+    z-index: 10;
+}
+
+p {
+    margin: 2px;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow-y: auto;
+}
+
+ul, ul li {
+    list-style: none;
+}
+
+.list li {
+    padding-left: 5px;
+    margin-bottom: 10px;
+    border-left: 3px solid #333333;
+}
+
+.list li:hover .answer {
+    background: rgba(0, 184, 255, 0.5) !important;
+}
+
+.list li:nth-child(odd) {
+    background: #efefef;
+}
+
+.list .title {
+    font-size: 12px;
+    margin: 5px auto;
+}
+
+.list .answer {
+    font-size: 14px;
+    cursor: pointer;
+    color: blue;
+}
+
+.reserved {
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+}
+.desc{
+    color: #ddd;
+    font-size: 12px;
+}
