@@ -33,7 +33,7 @@
 
         .timer .item .label {
             text-align: left;
-            font-size: 14px;
+            font-size: 12px;
             border-right: 1px solid #333333;
         }
 
@@ -45,7 +45,7 @@
 
         .timer .item .control {
             text-align: right;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .control #stop {
@@ -54,7 +54,7 @@
          }
 
         .control #clear {
-            color: yellow;
+            color: #db9d01;
         }
 
         .timer .item .control a {
@@ -155,7 +155,7 @@
     $item.append($label).append($time).append($control);
     $control.append($start).append($stop).append($clear);
 
-    $label.text("循环倒计时" + tInt + "s")
+    $label.text("计时：" + tInt + "s")
     $time.text(valueToTime(tInt))
     $start.click(startTimer(id));
     $stop.click(stopTimer(id));
