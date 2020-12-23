@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>完美基友计时工具</title>
+    <link rel="shortcut icon" href="./img/favicon.ico">
+    <script src="https://lib.baomitu.com/jquery/3.5.0/jquery.min.js"></script>
+    <style>
+        .content {
+            margin: auto;
+            min-width: 150px;
+            max-width: 500px;
+        }
+
+        .inputs, .timer {
+            border: 1px solid #333333;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .inputs input {
+            text-align: right;
+        }
+
+        .timer .item div {
+            display: inline-block;
+            width: calc(30% - 5px);
+            line-height: 35px;
+            height: 35px;
+            vertical-align: top;
+        }
+
+        .timer .item .label {
+            text-align: left;
+            font-size: 14px;
+            border-right: 1px solid #333333;
+        }
+
+        .timer .item .time {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .timer .item .control {
+            text-align: right;
+        }
+
+        .control #stop {
+            display: none;
+        }
+
+        .timer .item .control a {
+            margin-right: 15px;
+        }
+
+    </style>
+</head>
+<body>
+<script type="application/javascript">
+  const timerObj = {}
+
+  function clearTimer(id) {
+    return (event) => {
+      if (timerObj[id] && timerObj[id].interval) {
+        clearInterval(timerObj[id].interval)
+        delete timerObj[id]
+      }
+      $("#" + id).remove();
+    }
+  }
+
+  function valueToTime(val) {
+    const min = Math.floor(val / 60)
+    const second = Math.floor(val % 60)
+    return parse(min) + ":" + parse(second);
+  }
+
+  function parse(val) {
+    return val < 10 ? "0" + val : val
+  }
+
+  function startInterval(id, $timer, startVal) {
+    let sVal = startVal;
+    return () => {
+      sVal--;
+      $timer.text(valueToTime(sVal >= 0 ? sVal : sVal = startVal))
+    }
+  }
+
+  function startTimer(id) {
+    return event => {
+      $("#" + id + " a#stop").show();
+      $("#" + id + " a#start").hide();
+      if (timerObj[id]) {
+        const {$time, value} = timerObj[id];
+        timerObj[id].interval = setInterval(startInterval(id, $time, value), 1000)
+      }
+    }
+  }
+
+  function stopTimer(id) {
+    return event => {
+      $("#" + id + " a#stop").hide();
+      $("#" + id + " a#start").show();
+      if (timerObj[id] && timerObj[id].interval) {
+        clearInterval(timerObj[id].interval)
+        const {$time, value} = timerObj[id];
+        $time.text(valueToTime(value))
+      }
+    }
+  }
+</script>
+
+<div class="content">
+    <div class="inputs">
+        <span>循环倒计时：</span>
+        <input id="time" type="text" value="45"/>s
+        <button onclick="addTimer()">添加</button>
+    </div>
+</div>
+<script>
+  function addTimer() {
+    let tVal = $("#time").val();
+    if (!tVal) {
+      alert("倒计时时间不能为空");
+      return;
+    }
+    let tInt = parseInt(tVal);
+    if (!tInt) {
+      alert("倒计时时间只能为数字")
+      return;
+    }
+    if (tInt > 3600) {
+      alert("时间不得超过1小时")
+      return;
+    }
+    const id = "t_" + new Date().getTime();
+    const $timerDiv = $("<div>").attr("class", "timer").attr("id", id),
+      $item = $("<div>").attr("class", "item"),
+      $label = $("<div>").attr("class", "label"),
+      $time = $("<div>").attr("class", "time"),
+      $control = $("<div>").attr("class", "control"),
+      $start = $("<a>").attr("id", "start").attr("href", "javascript:;").text("开始"),
+      $stop = $("<a>").attr("id", "stop").attr("href", "javascript:;").text("停止"),
+      $clear = $("<a>").attr("id", "clear").attr("href", "javascript:;").text("删除");
+    $timerDiv.append($item);
+    $item.append($label).append($time).append($control);
+    $control.append($start).append($stop).append($clear);
+
+    $label.text("循环倒计时" + tInt + "s")
+    $time.text(valueToTime(tInt))
+    $start.click(startTimer(id));
+    $stop.click(stopTimer(id));
+    $clear.click(clearTimer(id));
+    $(".content").append($timerDiv);
+    timerObj[id] = {
+      $time: $time,
+      value: tInt
+    }
+  }
+</script>
+</body>
+</html>

@@ -49,15 +49,32 @@ ul, ul li {
     color: blue;
 }
 
-.reserved {
+.other-tools, .reserved {
     width: 100%;
     text-align: center;
     font-size: 10px;
+}
+
+.other-tools {
+    margin: 20px auto 0;
+    width: 80%;
+    padding-left: 100px;
+    text-align: left;
+    background: #dddddd;
+}
+
+.other-tools a {
+    margin-left: 15px;
+}
+
+
+.reserved {
     position: absolute;
     bottom: 10px;
     left: 0;
 }
-.desc{
+
+.desc {
     color: #ddd;
     font-size: 12px;
 }
