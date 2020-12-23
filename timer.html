@@ -63,6 +63,31 @@
             margin-right: 25px;
         }
 
+        .time-warn{
+            background: rgba(255, 0, 0, 0.05);
+            animation-name: breath;
+            animation-duration: 2s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+
+            /* Safari and Chrome */
+            -webkit-animation-name: breath;
+            -webkit-animation-duration: 2s;
+            -webkit-animation-timing-function: ease-in-out;
+            -webkit-animation-iteration-count: infinite;
+        }
+
+        @keyframes breath {
+            from { background: rgba(255, 0, 0, 0.05); }
+            50%   { background: rgba(255, 0, 0, 0.5); }
+            to   { background: rgba(255, 0, 0, 0.05); }
+        }
+
+        @-webkit-keyframes breath {
+            from { background: rgba(255, 0, 0, 0.05); }
+            50%   { background: rgba(255, 0, 0, 0.5); }
+            to   { background: rgba(255, 0, 0, 0.05); }
+        }
     </style>
 </head>
 <body>
@@ -93,7 +118,13 @@
     let sVal = startVal;
     return () => {
       sVal--;
-      $timer.text(valueToTime(sVal >= 0 ? sVal : sVal = startVal))
+      let showVal = sVal >= 0 ? sVal : sVal = startVal;
+      if( showVal <= 5 ){
+        $("#" + id).addClass("time-warn")
+      }else{
+        $("#" + id).removeClass("time-warn")
+      }
+      $timer.text(valueToTime(showVal))
     }
   }
 
