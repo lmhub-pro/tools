@@ -25,6 +25,23 @@
             margin-right: 5px;
         }
 
+        .tool-all{
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .tool-all a{
+            margin-right: 30px;
+        }
+
+        .stop{
+            color: red;
+        }
+
+        .clear {
+            color: #db9d01;
+        }
+
         .timer .item div {
             display: inline-block;
             width: calc(30% - 5px);
@@ -52,12 +69,7 @@
 
         .control #stop {
              display: none;
-             color: red;
          }
-
-        .control #clear {
-            color: #db9d01;
-        }
 
         .timer .item .control a:not(:last-child) {
             margin-right: 25px;
@@ -132,9 +144,11 @@
     return event => {
       $("#" + id + " a#stop").show();
       $("#" + id + " a#start").hide();
-      if (timerObj[id]) {
-        const {$time, value} = timerObj[id];
-        timerObj[id].interval = setInterval(startInterval(id, $time, value), 1000)
+      if( !timerObj[id].interval ){
+        if (timerObj[id]) {
+          const {$time, value} = timerObj[id];
+          timerObj[id].interval = setInterval(startInterval(id, $time, value), 1000)
+        }
       }
     }
   }
@@ -146,8 +160,27 @@
       if (timerObj[id] && timerObj[id].interval) {
         clearInterval(timerObj[id].interval)
         const {$time, value} = timerObj[id];
+        $("#" + id).removeClass("time-warn")
         $time.text(valueToTime(value))
       }
+    }
+  }
+
+  function startAll() {
+    for (let key of Object.keys(timerObj)) {
+        startTimer(key)()
+    }
+  }
+
+  function stopAll() {
+    for (let key of Object.keys(timerObj)) {
+      stopTimer(key)()
+    }
+  }
+
+  function clearAll() {
+    for (let key of Object.keys(timerObj)) {
+      clearTimer(key)()
     }
   }
 </script>
@@ -157,6 +190,11 @@
         <span>循环倒计时：</span>
         <input id="time" type="text" value="45"/>s
         <button onclick="addTimer()">添加</button>
+    </div>
+    <div class="tool-all">
+        <a class="start" href="javascript:;" onclick="startAll()">全部开始</a>
+        <a class="stop" href="javascript:;" onclick="stopAll()">全部停止</a>
+        <a class="clear" href="javascript:;" onclick="clearAll()">移除所有</a>
     </div>
 </div>
 <script>
@@ -181,9 +219,9 @@
       $label = $("<div>").attr("class", "label"),
       $time = $("<div>").attr("class", "time"),
       $control = $("<div>").attr("class", "control"),
-      $start = $("<a>").attr("id", "start").attr("href", "javascript:;").text("开始"),
-      $stop = $("<a>").attr("id", "stop").attr("href", "javascript:;").text("停止"),
-      $clear = $("<a>").attr("id", "clear").attr("href", "javascript:;").text("删除");
+      $start = $("<a>").attr("id", "start").addClass("start").attr("href", "javascript:;").text("开始"),
+      $stop = $("<a>").attr("id", "stop").addClass("stop").attr("href", "javascript:;").text("停止"),
+      $clear = $("<a>").attr("id", "clear").addClass("clear").attr("href", "javascript:;").text("删除");
     $timerDiv.append($item);
     $item.append($label).append($time).append($control);
     $control.append($start).append($stop).append($clear);
