@@ -19,6 +19,10 @@
             text-align: center;
         }
 
+        .timer.running{
+            border: 1px solid #004cff;
+        }
+
         .inputs input {
             text-align: right;
             padding-right: 5px;
@@ -44,10 +48,20 @@
 
         .timer .item div {
             display: inline-block;
-            width: calc(30% - 5px);
+            width: calc(25% - 5px);
             line-height: 35px;
             height: 35px;
             vertical-align: top;
+        }
+
+        .timer .item div.time{
+              width: calc(30% - 5px);
+            text-align: right;
+        }
+        .timer .item div.mill{
+            width: calc(20% - 5px);
+            text-align: left;
+            line-height: 40px;
         }
 
         .timer .item .label {
@@ -116,27 +130,29 @@
     }
   }
 
-  function valueToTime(val) {
-    const min = Math.floor(val / 60)
-    const second = Math.floor(val % 60)
-    return parse(min) + ":" + parse(second);
+  function showTime($time, $mill, val) {
+    const seconds = val / 1000;
+    const min = Math.floor(seconds / 60)
+    const second = Math.floor(seconds % 60)
+    $time.text(parse(min) + ":" + parse(second));
+    $mill.text("." + (val % 1000 / 100));
   }
 
   function parse(val) {
     return val < 10 ? "0" + val : val
   }
 
-  function startInterval(id, $timer, startVal) {
+  function startInterval(id, $timer, $mill, startVal) {
     let sVal = startVal;
     return () => {
-      sVal--;
+      sVal -= 100;
       let showVal = sVal >= 0 ? sVal : sVal = startVal;
-      if( showVal <= 5 ){
+      if( showVal <= 5000 ){
         $("#" + id).addClass("time-warn")
       }else{
         $("#" + id).removeClass("time-warn")
       }
-      $timer.text(valueToTime(showVal))
+      showTime($timer, $mill, showVal);
     }
   }
 
@@ -144,11 +160,13 @@
     return event => {
       $("#" + id + " a#stop").show();
       $("#" + id + " a#start").hide();
+      $("#" + id).addClass("running");
+      if( !timerObj[id] ){
+        timerObj[id] = {};
+      }
       if( !timerObj[id].interval ){
-        if (timerObj[id]) {
-          const {$time, value} = timerObj[id];
-          timerObj[id].interval = setInterval(startInterval(id, $time, value), 1000)
-        }
+        const {$time, $mill, value} = timerObj[id];
+        timerObj[id].interval = setInterval(startInterval(id, $time, $mill, value), 100)
       }
     }
   }
@@ -159,9 +177,11 @@
       $("#" + id + " a#start").show();
       if (timerObj[id] && timerObj[id].interval) {
         clearInterval(timerObj[id].interval)
-        const {$time, value} = timerObj[id];
-        $("#" + id).removeClass("time-warn")
-        $time.text(valueToTime(value))
+        const {$time, $mill, value} = timerObj[id];
+        $("#" + id).removeClass("running");
+        $("#" + id).removeClass("time-warn");
+        showTime($time, $mill, value);
+        timerObj[id].interval = null;
       }
     }
   }
@@ -218,22 +238,25 @@
       $item = $("<div>").attr("class", "item"),
       $label = $("<div>").attr("class", "label"),
       $time = $("<div>").attr("class", "time"),
+      $mill = $("<div>").attr("class", "mill"),
       $control = $("<div>").attr("class", "control"),
       $start = $("<a>").attr("id", "start").addClass("start").attr("href", "javascript:;").text("开始"),
       $stop = $("<a>").attr("id", "stop").addClass("stop").attr("href", "javascript:;").text("停止"),
       $clear = $("<a>").attr("id", "clear").addClass("clear").attr("href", "javascript:;").text("删除");
     $timerDiv.append($item);
-    $item.append($label).append($time).append($control);
+    $item.append($label).append($time).append($mill).append($control);
     $control.append($start).append($stop).append($clear);
 
     $label.html("计时：<span style='font-size: 18px; font-weight: bold;'>" + tInt + "</span>&nbsp;s")
-    $time.text(valueToTime(tInt))
+    tInt = tInt * 1000;
+    showTime($time, $mill, tInt);
     $start.click(startTimer(id));
     $stop.click(stopTimer(id));
     $clear.click(clearTimer(id));
     $(".content").append($timerDiv);
     timerObj[id] = {
       $time: $time,
+      $mill: $mill,
       value: tInt
     }
   }
